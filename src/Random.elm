@@ -1,9 +1,9 @@
 effect module Random where { command = MyCmd } exposing
   ( Generator, Seed
-  , int, float, constant
+  , int, float, uniform, weighted, constant
   , list, pair
   , map, map2, map3, map4, map5
-  , andThen
+  , andThen, lazy
   , minInt, maxInt
   , generate
   , step, initialSeed, independentSeed
@@ -21,14 +21,17 @@ by M. E. O'Neil. It is not cryptographically secure.
 # Generators
 @docs Generator, generate
 
-# Primitive Generators
-@docs int, float, constant
+# Primitives
+@docs int, float, uniform, weighted, constant
 
-# Data Structure Generators
+# Data Structures
 @docs pair, list
 
-# Custom Generators
-@docs map, map2, map3, map4, map5, andThen
+# Mapping
+@docs map, map2, map3, map4, map5
+
+# Fancy Stuff
+@docs andThen, lazy
 
 # Constants
 @docs maxInt, minInt
@@ -270,6 +273,91 @@ listHelp revList n gen seed =
 
 
 
+-- ENUMERATIONS
+
+
+{-| Generate values with equal probability. Say we want a random suit for some
+cards:
+
+    import Random
+
+    type Suit = Diamond | Club | Heart | Spade
+
+    suit : Random.Generator Suit
+    suit =
+      Random.uniform Diamond [ Club, Heart, Spade ]
+
+That generator produces all `Suit` values with equal probability, 25% each.
+
+**Note:** An older version of this API had type `uniform : List a -> Generator a`
+which looks a little prettier in code. But it led to an awkward question. What
+do you do with `uniform []`? How can it produce an `Int` or `Float`? The
+current API guarantees that we always have *at least* one value, so we never
+run into that question!
+-}
+uniform : a -> List a -> Generator a
+uniform value valueList =
+  weighted (addOne value) (List.map addOne valueList)
+
+
+addOne : a -> (Float, a)
+addOne value =
+  ( 1, value )
+
+
+{-| Generate values with a _weighted_ probability. Say we want to simulate a
+[loaded die](https://en.wikipedia.org/wiki/Dice#Loaded_dice) that lands
+on ⚄ and ⚅ more often than the other faces:
+
+    import Random
+
+    type Face = One | Two | Three | Four | Five | Six
+
+    roll : Random.Generator Face
+    roll =
+      Random.weighted
+        (10, One)
+        [ (10, Two)
+        , (10, Three)
+        , (10, Four)
+        , (20, Five)
+        , (40, Six)
+        ]
+
+So there is a 40% chance of getting `Six`, a 20% chance of getting `Five`, and
+then a 10% chance for each of the remaining faces.
+
+**Note:** I made the weights add up to 100, but that is not necessary. I always
+add up your weights into a `total`, and from there, the probablity of each case
+is `weight / total`. Negative weights do not really make sense, so I just flip
+them to be positive.
+-}
+weighted : (Float, a) -> List (Float, a) -> Generator a
+weighted first others =
+  let
+    normalize (weight, _) =
+      abs weight
+
+    total =
+      normalize first + List.sum (List.map normalize others)
+  in
+  andThen (getByWeight first others) (float 0 total)
+
+
+getByWeight : (Float, a) -> List (Float, a) -> Float -> a
+getByWeight (weight, value) others countdown =
+  case others of
+    [] ->
+      value
+
+    next :: otherOthers ->
+      if countdown <= abs weight then
+        value
+      else
+        getByWeight next otherOthers (countdown - abs weight)
+
+
+
 -- CUSTOM GENERATORS
 
 
@@ -399,7 +487,7 @@ map3 func (Generator genA) (Generator genB) (Generator genC) =
 {-| Combine four generators.
 
 Say you are making game and want to place enemies or terrain randomly. You
-_could_ generate a [quadtree][]!
+_could_ generate a [quadtree](https://en.wikipedia.org/wiki/Quadtree)!
 
     import Random
 
@@ -409,38 +497,33 @@ _could_ generate a [quadtree][]!
       | Node (QuadTree a) (QuadTree a) (QuadTree a) (QuadTree a)
 
     quadTree : Random.Generator a -> Random.Generator (QuadTree a)
-    quadTree leaf =
-      Random.int 1 100
-        |> Random.andThen (\n -> pickSomething n leaf)
-
-    pickSomething : Int -> Random.Generator a -> Random.Generator (QuadTree a)
-    pickSomething n leaf =
-      if n < 40 then
-        Random.constant Empty
-
-      else if n < 80 then
-        Random.map Leaf leaf
-
-      else
-        Random.map4 Node (quadTree leaf) (quadTree leaf) (quadTree leaf) (quadTree leaf)
+    quadTree leafGen =
+      let
+        subQuads =
+          Random.lazy (\_ -> quadTree leafGen)
+      in
+        Random.uniform
+          (Random.constant Empty)
+          [ Random.map Leaf leafGen
+          , Random.map4 Node subQuad subQuad subQuad subQuad
+          ]
 
 We start by creating a `QuadTree` type where each quadrant is either `Empty`, a
-`Leaf` containing something interesting, or a `Node` with four sub quadrants.
+`Leaf` containing something interesting, or a `Node` with four sub-quadrants.
 
-We pick a number between 1 and 100 **and then** use it to decide what to do
-next. We get `Empty` 40% of the time, a `Leaf` with random content 40% of the
-time, and another level of quadrants 20% of the time. To make our next level
-of quadrants, we need a way to generate a `QuadTree`, but we are still
-defining how to do that... One of the best tricks in functional programming is
-to pretent you are already done. Just use the `quadTree` generator for that
-next level!
-
-[quadtree]: https://en.wikipedia.org/wiki/Quadtree
+Next the `quadTree` definition describes how to generate these values. A third
+of a time you get an `Empty` tree. A third of the time you get a `Leaf` with
+some interesting value. And a third of the time you get a `Node` full of more
+`QuadTree` values. How are those subtrees generated though? Well, we use our
+`quadTree` generator!
 
 **Exercises:** Can `quadTree` generate infinite `QuadTree` values? Is there
 some way to limit the depth of the `QuadTree`? Can you render the `QuadTree`
 to HTML using absolute positions and fractional dimensions? Can you render
 the `QuadTree` to SVG?
+
+**Note:** Check out the docs for [`lazy`](#lazy) to learn why that is needed
+to define a recursive `Generator` like this one.
 -}
 map4 : (a -> b -> c -> d -> e) -> Generator a -> Generator b -> Generator c -> Generator d -> Generator e
 map4 func (Generator genA) (Generator genB) (Generator genC) (Generator genD) =
@@ -508,6 +591,39 @@ andThen callback (Generator genA) =
       genB newSeed
   )
 
+
+{-| Helper for defining certain self-recursive generators. Say we want to
+generate a random number of probabilities:
+
+    import Random
+
+    probabilities : Random.Generator (List Float)
+    probabilities =
+      Random.uniform
+        [ Random.constant []
+        , Random.map2 (::)
+            (Random.float 0 1)
+            (Random.lazy (\_ -> probabilities))
+        ]
+
+In 50% of cases we end the list. In 50% of cases we generate a probability and
+add it onto a random number of probabilities. The `lazy` call is crucial
+because it means we do not unroll the generator unless we need to.
+
+This is a pretty subtle issue, so I recommend reading more about it
+[here](https://elm-lang.org/hints/0.19.0/bad-recursion)!
+
+**Note:** You can delay evaluation with `andThen` too. The thing that matters
+is that you have a function call that delays the creation of the generator!
+-}
+lazy : (() -> Generator a) -> Generator a
+lazy callback =
+  Generator (\seed ->
+    let
+      (Generator gen) = callback ()
+    in
+      gen newSeed
+  )
 
 
 -- IMPLEMENTATION
