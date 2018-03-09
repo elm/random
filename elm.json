@@ -1,0 +1,15 @@
+{
+	"type": "package",
+	"name": "elm-lang/random",
+	"summary": "Generate random numbers and values (RNG)",
+	"license": "BSD-3-Clause",
+	"version": "1.0.0",
+	"exposed-modules": [
+		"Random"
+	],
+	"elm-version": "0.19.0 <= v < 0.20.0",
+	"dependencies": {
+		"elm-lang/core": "6.0.0 <= v < 7.0.0"
+	},
+	"test-dependencies": {}
+}
