@@ -502,6 +502,7 @@ _could_ generate a [quadtree](https://en.wikipedia.org/wiki/Quadtree)!
         subQuads =
           Random.lazy (\_ -> quadTree leafGen)
       in
+      Random.andThen identity <|
         Random.uniform
           (Random.constant Empty)
           [ Random.map Leaf leafGen
@@ -599,12 +600,13 @@ generate a random number of probabilities:
 
     probabilities : Random.Generator (List Float)
     probabilities =
-      Random.uniform
-        [ Random.constant []
-        , Random.map2 (::)
-            (Random.float 0 1)
-            (Random.lazy (\_ -> probabilities))
-        ]
+      Random.andThen identity <|
+        Random.uniform
+          [ Random.constant []
+          , Random.map2 (::)
+              (Random.float 0 1)
+              (Random.lazy (\_ -> probabilities))
+          ]
 
 In 50% of cases we end the list. In 50% of cases we generate a probability and
 add it onto a random number of probabilities. The `lazy` call is crucial
