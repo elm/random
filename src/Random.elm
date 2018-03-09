@@ -289,11 +289,11 @@ cards:
 
 That generator produces all `Suit` values with equal probability, 25% each.
 
-**Note:** An older version of this API had type `uniform : List a -> Generator a`
-which looks a little prettier in code. But it led to an awkward question. What
-do you do with `uniform []`? How can it produce an `Int` or `Float`? The
-current API guarantees that we always have *at least* one value, so we never
-run into that question!
+**Note:** Why not have `uniform : List a -> Generator a` as the API? It looks
+a little prettier in code, but it leads to an awkward question. What do you do
+with `uniform []`? How can it produce an `Int` or `Float`? The current API
+guarantees that we always have *at least* one value, so we never run into that
+question!
 -}
 uniform : a -> List a -> Generator a
 uniform value valueList =
@@ -461,16 +461,12 @@ map2 func (Generator genA) (Generator genB) =
     spin =
       Random.map3 Spin symbol symbol symbol
 
-    -- symbol : Random.Generator Symbol
-
-The functions in `Random.Extra` of [`elm-community/random-extra`][extra] make
-it easier to define your `symbol` generator.
+    symbol : Random.Generator Symbol
+    symbol =
+      Random.uniform Cherry [ Seven, Bar, Grapes ]
 
 **Note:** Always start with the types. Make a generator for each thing you need
 and then put them all together with one of these `map` functions.
-
-[extra]: /packages/elm-community/random-extra/latest
-
 -}
 map3 : (a -> b -> c -> d) -> Generator a -> Generator b -> Generator c -> Generator d
 map3 func (Generator genA) (Generator genB) (Generator genC) =
@@ -577,8 +573,8 @@ example, here is how you can define `map` using `andThen`:
       generator
         |> Random.andThen (\value -> Random.constant (func value))
 
-This function gets used a lot in [`elm-community/random-extra`][extra], so it
-may be helpful to look through the implementation there for more examples.
+The `andThen` function gets used a lot in [`elm-community/random-extra`][extra],
+so it may be helpful to look through the implementation there for more examples.
 
 [extra]: /packages/elm-community/random-extra/latest
 -}
@@ -593,8 +589,8 @@ andThen callback (Generator genA) =
   )
 
 
-{-| Helper for defining certain self-recursive generators. Say we want to
-generate a random number of probabilities:
+{-| Helper for defining self-recursive generators. Say we want to generate a
+random number of probabilities:
 
     import Random
 
