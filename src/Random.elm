@@ -47,7 +47,6 @@ import List exposing ((::))
 import Platform
 import Platform.Cmd exposing (Cmd)
 import Task exposing (Task)
-import Time
 import Tuple
 
 
@@ -815,19 +814,17 @@ independentSeed =
                 gen =
                     int 0 0xFFFFFFFF
 
-                ( ( state, b, c ), seed1 ) =
-                    step (map3 (,,) gen gen gen) seed0
-
                 {--
                 Although it probably doesn't hold water theoretically, xor two
                 random numbers to make an increment less likely to be
                 pathological. Then make sure that it's odd, which is required.
                 Next make sure it is positive. Finally step it once before use.
                 --}
-                incr =
-                    Bitwise.shiftRightZfBy 0 (Bitwise.or 1 (Bitwise.xor b c))
+                makeIndependentSeed state b c =
+                    next <| Seed state <|
+                        Bitwise.shiftRightZfBy 0 (Bitwise.or 1 (Bitwise.xor b c))
             in
-                ( seed1, next (Seed state incr) )
+            step (map3 makeIndependentSeed gen gen gen) seed0
 
 
 
