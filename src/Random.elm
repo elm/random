@@ -47,7 +47,7 @@ import List exposing ((::))
 import Platform
 import Platform.Cmd exposing (Cmd)
 import Task exposing (Task)
-import Tuple
+import Time
 
 
 
@@ -349,11 +349,11 @@ getByWeight (weight, value) others countdown =
     [] ->
       value
 
-    next :: otherOthers ->
+    second :: otherOthers ->
       if countdown <= abs weight then
         value
       else
-        getByWeight next otherOthers (countdown - abs weight)
+        getByWeight second otherOthers (countdown - abs weight)
 
 
 
@@ -619,7 +619,7 @@ lazy callback =
     let
       (Generator gen) = callback ()
     in
-      gen newSeed
+      gen seed
   )
 
 
