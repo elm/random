@@ -340,7 +340,7 @@ weighted first others =
     total =
       normalize first + List.sum (List.map normalize others)
   in
-  andThen (getByWeight first others) (float 0 total)
+  map (getByWeight first others) (float 0 total)
 
 
 getByWeight : (Float, a) -> List (Float, a) -> Float -> a
