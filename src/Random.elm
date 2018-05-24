@@ -728,7 +728,7 @@ Both are building blocks that snap together with `map`, `map2`, etc. You can rea
 more about JSON decoders [here][json] to see the similarity.
 
 [guide]: https://guide.elm-lang.org/
-[slack]: http://elmlang.herokuapp.com/
+[slack]: https://elmlang.herokuapp.com/
 [json]: https://guide.elm-lang.org/interop/json.html
 -}
 type Generator a =
