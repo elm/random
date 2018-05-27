@@ -25,7 +25,7 @@ usuallyTrue =
 
 In each of these defines _how_ to generate random values. The most interesting case is `usuallyTrue` which generates `True` 80% of the time and `False` 20% of the time!
 
-Now look at this [working example](http://elm-lang.org/examples/random) to see a `Generator` used in an application.
+Now look at this [working example](https://elm-lang.org/examples/random) to see a `Generator` used in an application.
 
 
 ## Mindset Shift
@@ -34,7 +34,7 @@ If you are coming from JavaScript, this package is usually quite surprising at f
 
 So instead, we create a `Generator` and hand it to the Elm runtime system to do the dirty work of generating values. We get to keep our guarantees _and_ we get random values. Great! And once people become familiar with generators, they often report that it is _easier_ than the traditional imperative APIs for most cases. For example, jump to the docs for [`Random.map4`](Random#map4) for an example of generating random [quadtrees](https://en.wikipedia.org/wiki/Quadtree) and think about what it would look like to do that in JavaScript!
 
-Point is, this library takes some learning, but we really think it is worth it. So hang in there, and do not hesitate to ask for help on [Slack](http://elmlang.herokuapp.com/) or [Discourse](https://discourse.elm-lang.org/)!
+Point is, this library takes some learning, but we really think it is worth it. So hang in there, and do not hesitate to ask for help on [Slack](https://elmlang.herokuapp.com/) or [Discourse](https://discourse.elm-lang.org/)!
 
 
 ## Future Plans
