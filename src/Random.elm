@@ -597,8 +597,8 @@ random number of probabilities:
     probabilities =
       Random.andThen identity <|
         Random.uniform
-          [ Random.constant []
-          , Random.map2 (::)
+          (Random.constant [])
+          [ Random.map2 (::)
               (Random.float 0 1)
               (Random.lazy (\_ -> probabilities))
           ]
