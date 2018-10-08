@@ -653,7 +653,7 @@ lazy callback =
     because there are more random numbers that lead to 1 than 7. So instead, I
     check to see if my random number exceeds 28 (the largest multiple of 7 less
     than 32). If it does, I reroll, otherwise I mod by seven. This sounds
-    wateful, except that instead of 32 it's 2^32, so in practice it's hard to
+    wasteful, except that instead of 32 it's 2^32, so in practice it's hard to
     notice. So that's how we get random ints. There's another process from
     floats, but I don't understand it very well.
 -}
