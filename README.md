@@ -25,7 +25,7 @@ usuallyTrue =
 
 In each of these defines _how_ to generate random values. The most interesting case is `usuallyTrue` which generates `True` 80% of the time and `False` 20% of the time!
 
-Now look at this [working example](https://elm-lang.org/examples/random) to see a `Generator` used in an application.
+Now look at this [working example](https://guide.elm-lang.org/effects/random.html) to see a `Generator` used in an application.
 
 
 ## Mindset Shift
