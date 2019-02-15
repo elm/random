@@ -608,7 +608,7 @@ add it onto a random number of probabilities. The `lazy` call is crucial
 because it means we do not unroll the generator unless we need to.
 
 This is a pretty subtle issue, so I recommend reading more about it
-[here](https://elm-lang.org/hints/0.19.0/bad-recursion)!
+[here](https://elm-lang.org/0.19.0/bad-recursion)!
 
 **Note:** You can delay evaluation with `andThen` too. The thing that matters
 is that you have a function call that delays the creation of the generator!
