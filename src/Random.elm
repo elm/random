@@ -427,7 +427,7 @@ five and ten enemies on screen:
         |> Random.andThen (\num -> Random.list num enemy)
 
 We will generate a number between five and ten, **and then** generate
-that number of enimies!
+that number of enemies!
 
 **Note:** Snapping generators together like this is very important! Always
 start by with generators for each `type` you need, and then snap them
