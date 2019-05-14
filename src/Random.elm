@@ -783,7 +783,7 @@ In practice, you may want to get the initial seed by (1) sending it to Elm
 through flags or (2) using `Time.now` to get a number that the user has not
 seen before. (Flags are described on [this page][flags].)
 
-[flags]: https://guide.elm-lang.org/interop/javascript.html
+[flags]: https://guide.elm-lang.org/interop/flags.html
 -}
 initialSeed : Int -> Seed
 initialSeed x =
