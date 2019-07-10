@@ -43,4 +43,4 @@ There are a ton of useful helper functions in the [`elm-community/random-extra`]
 
 We will probably do an API review and merge the results into this package someday. Not sure when, but it would be kind of nice to have it all in one place. But in the meantime, just do `elm install elm-community/random-extra` if you need stuff from there!
 
-[extra]: /packages/elm-community/random-extra/latest
+[extra]: https://package.elm-lang.org/packages/elm-community/random-extra/latest
