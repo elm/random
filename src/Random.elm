@@ -735,7 +735,7 @@ type Generator a =
     Generator (Seed -> (a, Seed))
 
 
-{-| So you need _reproducable_ randomness for some reason.
+{-| So you need _reproducible_ randomness for some reason.
 
 This `step` function lets you use a `Generator` without commands. It is a
 normal Elm function. Same input, same output! So to get a 3D point you could
@@ -767,7 +767,7 @@ step (Generator generator) seed =
   generator seed
 
 
-{-| Create a `Seed` for _reproducable_ randomness.
+{-| Create a `Seed` for _reproducible_ randomness.
 
     import Random
 
