@@ -156,6 +156,13 @@ float : Float -> Float -> Generator Float
 float a b =
     Generator (\seed0 ->
         let
+            -- Sanitize the input range
+            ( minRange, maxRange ) =
+                if a < b then
+                    ( a, b )
+                else
+                    ( b, a )
+
             -- Get 64 bits of randomness
             seed1 =
                 next seed0
@@ -179,10 +186,10 @@ float a b =
 
             -- Scale it into our range
             range =
-                abs (b - a)
+                abs (maxRange - minRange)
 
             scaled =
-                val * range + a
+                val * range + minRange
         in
             ( scaled, next seed1 )
         )
