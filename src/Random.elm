@@ -327,7 +327,7 @@ So there is a 40% chance of getting `Six`, a 20% chance of getting `Five`, and
 then a 10% chance for each of the remaining faces.
 
 **Note:** I made the weights add up to 100, but that is not necessary. I always
-add up your weights into a `total`, and from there, the probablity of each case
+add up your weights into a `total`, and from there, the probability of each case
 is `weight / total`. Negative weights do not really make sense, so I just flip
 them to be positive.
 -}
