@@ -865,11 +865,6 @@ generate tagger generator =
 type MyCmd msg = Generate (Generator msg)
 
 
-cmdMap : (a -> b) -> MyCmd a -> MyCmd b
-cmdMap func (Generate generator) =
-  Generate (map func generator)
-
-
 init : Task Never Seed
 init =
   Task.andThen (\time -> Task.succeed (initialSeed (Time.posixToMillis time))) Time.now
